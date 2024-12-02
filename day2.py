@@ -21,12 +21,8 @@ def safe_reports(reactor_data, safe_condition, VALID_LEVEL_CHANGE):
     safe_reports_counter = 0
     
     for report in reactor_data:
-        print(report, end=" ")
         if safe_condition(report, VALID_LEVEL_CHANGE):
-            print("safe")
             safe_reports_counter += 1
-        else:
-            print("not safe")
 
     return safe_reports_counter
 
@@ -39,7 +35,120 @@ with open("example.txt", "r") as file:
 print(safe_reports(reactor_data, is_safe, 3))
 
 # PART 2
+# wrong
 
-#def is_safe_tolerate_one_exception(report, VALID_LEVEL_CHANGE)
-#print(safe_reports(reactor_data, is_safe_tolerate_one_exception, 3))
+from collections import Counter
 
+def check_asc_order(report, VALID_LEVEL_CHANGE):
+    # check duplicates  
+    duplicates = Counter(report)
+    popped = False
+    
+    for num, occ in duplicates.items():
+        if occ == 2 and not popped:
+            report.remove(num)
+            popped = True
+        elif occ >= 3 or (occ == 2 and popped):
+            return False
+
+    # check order
+    report_asc = sorted(report)
+
+    for i in range(len(report)):
+        if report[i] != report_asc[i] and not popped:
+            report.pop(i)
+
+            for j in range(len(report)):
+                if report[j] != report_asc[j]:
+                    return False
+
+            popped = True
+            break
+        elif report[i] != report_asc[i] and popped:
+            return False
+
+    # check difference
+    for i in range(1, len(report)):      
+
+        diff = abs(report[i] - report[i - 1])
+
+        if (diff > VALID_LEVEL_CHANGE or diff == 0) and not popped:
+
+            report.pop(i)
+            popped = True
+
+            for j in range(len(report)):
+
+                diff = abs(report[j] - report[j - 1])
+
+                if (diff > VALID_LEVEL_CHANGE or diff == 0):
+                    return False
+        elif (diff > VALID_LEVEL_CHANGE or diff == 0) and popped:
+            return False
+
+    return True
+
+def check_desc_order(report, VALID_LEVEL_CHANGE):
+    # check duplicates  
+    duplicates = Counter(report)
+    popped = False
+    
+    for num, occ in duplicates.items():
+        if occ == 2 and not popped:
+
+            for i in range(len(report) - 1, -1, -1):
+                if report[i] == num:
+                    report.pop(i)
+                    break
+            
+            popped = True
+        elif occ >= 3 or (occ == 2 and popped):
+            return False
+
+    # check order
+    report_desc = sorted(report, reverse=True)
+
+    for i in range(len(report)):
+        if report[i] != report_desc[i] and not popped:
+            report.pop(i)
+
+            for j in range(len(report)):
+                if report[j] != report_desc[j]:
+                    return False
+
+            popped = True
+            break
+        elif report[i] != report_desc[i] and popped:
+            return False
+
+    # check difference
+    for i in range(1, len(report)):      
+
+        diff = abs(report[i] - report[i - 1])
+
+        if (diff > VALID_LEVEL_CHANGE or diff == 0) and not popped:
+
+            report.pop(i)
+            popped = True
+
+            for j in range(len(report)):
+
+                diff = abs(report[j] - report[j - 1])
+
+                if (diff > VALID_LEVEL_CHANGE or diff == 0):
+                    return False
+        elif (diff > VALID_LEVEL_CHANGE or diff == 0) and popped:
+            return False
+
+    return True
+
+def is_safe_tolerate_one_exception(report, VALID_LEVEL_CHANGE):
+    if is_safe(report, VALID_LEVEL_CHANGE):
+        return True
+        
+    asc_result = check_asc_order(report.copy(), VALID_LEVEL_CHANGE)
+    desc_result = check_desc_order(report.copy(), VALID_LEVEL_CHANGE)
+
+    return asc_result or desc_result
+    
+print(safe_reports(reactor_data, is_safe_tolerate_one_exception, 3))

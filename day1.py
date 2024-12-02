@@ -29,7 +29,7 @@ def count_distance(arr1, arr2):
     distance = 0
 
     for i in range(0, len(arr1)):
-        distance += max(arr1[i], arr2[i]) - min(arr1[i], arr2[i])
+        distance += abs(arr1[i] - arr2[i])
 
     return distance
 
