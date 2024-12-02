@@ -35,9 +35,15 @@ with open("example.txt", "r") as file:
 print(safe_reports(reactor_data, is_safe, 3))
 
 # PART 2
-# wrong
+# doesnt work (540 is not the answear at least for me)
 
 from collections import Counter
+
+def pop_last_occ(report, num):
+    for i in range(len(report) - 1, -1, -1):
+        if report[i] == num:
+            report.pop(i)
+            break
 
 def check_asc_order(report, VALID_LEVEL_CHANGE):
     # check duplicates  
@@ -46,7 +52,13 @@ def check_asc_order(report, VALID_LEVEL_CHANGE):
     
     for num, occ in duplicates.items():
         if occ == 2 and not popped:
-            report.remove(num)
+            idx = report.index(num)
+
+            if report[idx] > report[idx + 1]:
+                report.pop(idx)
+            else:
+                pop_last_occ(report, report[idx])
+
             popped = True
         elif occ >= 3 or (occ == 2 and popped):
             return False
@@ -56,13 +68,19 @@ def check_asc_order(report, VALID_LEVEL_CHANGE):
 
     for i in range(len(report)):
         if report[i] != report_asc[i] and not popped:
-            report.pop(i)
+            if report[i] > report[i + 1]:
+                report_asc.remove(report[i])
+                report.pop(i)
+            else:
+                pop_last_occ(report_asc, report[i])
+                pop_last_occ(report, report[i])
+                
+            popped = True
 
             for j in range(len(report)):
                 if report[j] != report_asc[j]:
                     return False
-
-            popped = True
+                
             break
         elif report[i] != report_asc[i] and popped:
             return False
@@ -74,15 +92,27 @@ def check_asc_order(report, VALID_LEVEL_CHANGE):
 
         if (diff > VALID_LEVEL_CHANGE or diff == 0) and not popped:
 
-            report.pop(i)
+            if i + 1 < len(report):
+                if abs(report[i + 1] - report[i]) <= VALID_LEVEL_CHANGE and abs(report[i + 1] - report[i]) > 0:
+                    report.pop(i - 1)
+                else:
+                    report.pop(i)
+            else:
+                if abs(report[i - 1] - report[i - 2]) <= VALID_LEVEL_CHANGE and abs(report[i - 1] - report[i - 2]) > 0:
+                    report.pop(i)
+                else:
+                    report.pop(i - 1)
+
             popped = True
 
-            for j in range(len(report)):
+            for j in range(1, len(report)):
 
                 diff = abs(report[j] - report[j - 1])
 
                 if (diff > VALID_LEVEL_CHANGE or diff == 0):
                     return False
+                
+            break
         elif (diff > VALID_LEVEL_CHANGE or diff == 0) and popped:
             return False
 
@@ -95,12 +125,13 @@ def check_desc_order(report, VALID_LEVEL_CHANGE):
     
     for num, occ in duplicates.items():
         if occ == 2 and not popped:
+            i = report.index(num)
 
-            for i in range(len(report) - 1, -1, -1):
-                if report[i] == num:
-                    report.pop(i)
-                    break
-            
+            if report[i] > report[i + 1]:
+                pop_last_occ(report, report[i])
+            else:
+                report.pop(i)
+
             popped = True
         elif occ >= 3 or (occ == 2 and popped):
             return False
@@ -110,13 +141,19 @@ def check_desc_order(report, VALID_LEVEL_CHANGE):
 
     for i in range(len(report)):
         if report[i] != report_desc[i] and not popped:
-            report.pop(i)
+            if report[i] > report[i + 1]:
+                pop_last_occ(report_desc, report[i])
+                pop_last_occ(report, report[i])
+            else:
+                report_desc.remove(report[i])
+                report.pop(i)
+
+            popped = True
 
             for j in range(len(report)):
                 if report[j] != report_desc[j]:
                     return False
 
-            popped = True
             break
         elif report[i] != report_desc[i] and popped:
             return False
@@ -128,15 +165,27 @@ def check_desc_order(report, VALID_LEVEL_CHANGE):
 
         if (diff > VALID_LEVEL_CHANGE or diff == 0) and not popped:
 
-            report.pop(i)
+            if i + 1 < len(report):
+                if abs(report[i + 1] - report[i]) <= VALID_LEVEL_CHANGE and abs(report[i + 1] - report[i]) > 0:
+                    report.pop(i - 1)
+                else:
+                    report.pop(i)
+            else:
+                if abs(report[i - 1] - report[i - 2]) <= VALID_LEVEL_CHANGE and abs(report[i - 1] - report[i - 2]) > 0:
+                    report.pop(i)
+                else:
+                    report.pop(i - 1)
+
             popped = True
 
-            for j in range(len(report)):
+            for j in range(1, len(report)):
 
                 diff = abs(report[j] - report[j - 1])
 
                 if (diff > VALID_LEVEL_CHANGE or diff == 0):
                     return False
+                
+            break
         elif (diff > VALID_LEVEL_CHANGE or diff == 0) and popped:
             return False
 
