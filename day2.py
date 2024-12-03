@@ -35,169 +35,91 @@ with open("example.txt", "r") as file:
 print(safe_reports(reactor_data, is_safe, 3))
 
 # PART 2
-# doesnt work (540 is not the answear at least for me)
 
 from collections import Counter
 
-def pop_last_occ(report, num):
-    for i in range(len(report) - 1, -1, -1):
-        if report[i] == num:
-            report.pop(i)
-            break
-
-def check_asc_order(report, VALID_LEVEL_CHANGE):
-    # check duplicates  
-    duplicates = Counter(report)
-    popped = False
-    
-    for num, occ in duplicates.items():
-        if occ == 2 and not popped:
-            idx = report.index(num)
-
-            if report[idx] > report[idx + 1]:
-                report.pop(idx)
-            else:
-                pop_last_occ(report, report[idx])
-
-            popped = True
-        elif occ >= 3 or (occ == 2 and popped):
-            return False
-
-    # check order
-    report_asc = sorted(report)
-
-    for i in range(len(report)):
-        if report[i] != report_asc[i] and not popped:
-            if report[i] > report[i + 1]:
-                report_asc.remove(report[i])
-                report.pop(i)
-            else:
-                pop_last_occ(report_asc, report[i])
-                pop_last_occ(report, report[i])
-                
-            popped = True
-
-            for j in range(len(report)):
-                if report[j] != report_asc[j]:
-                    return False
-                
-            break
-        elif report[i] != report_asc[i] and popped:
-            return False
-
-    # check difference
-    for i in range(1, len(report)):      
-
-        diff = abs(report[i] - report[i - 1])
-
-        if (diff > VALID_LEVEL_CHANGE or diff == 0) and not popped:
-
-            if i + 1 < len(report):
-                if abs(report[i + 1] - report[i]) <= VALID_LEVEL_CHANGE and abs(report[i + 1] - report[i]) > 0:
-                    report.pop(i - 1)
-                else:
-                    report.pop(i)
-            else:
-                if abs(report[i - 1] - report[i - 2]) <= VALID_LEVEL_CHANGE and abs(report[i - 1] - report[i - 2]) > 0:
-                    report.pop(i)
-                else:
-                    report.pop(i - 1)
-
-            popped = True
-
-            for j in range(1, len(report)):
-
-                diff = abs(report[j] - report[j - 1])
-
-                if (diff > VALID_LEVEL_CHANGE or diff == 0):
-                    return False
-                
-            break
-        elif (diff > VALID_LEVEL_CHANGE or diff == 0) and popped:
-            return False
-
-    return True
-
-def check_desc_order(report, VALID_LEVEL_CHANGE):
-    # check duplicates  
-    duplicates = Counter(report)
-    popped = False
-    
-    for num, occ in duplicates.items():
-        if occ == 2 and not popped:
-            i = report.index(num)
-
-            if report[i] > report[i + 1]:
-                pop_last_occ(report, report[i])
-            else:
-                report.pop(i)
-
-            popped = True
-        elif occ >= 3 or (occ == 2 and popped):
-            return False
-
-    # check order
-    report_desc = sorted(report, reverse=True)
-
-    for i in range(len(report)):
-        if report[i] != report_desc[i] and not popped:
-            if report[i] > report[i + 1]:
-                pop_last_occ(report_desc, report[i])
-                pop_last_occ(report, report[i])
-            else:
-                report_desc.remove(report[i])
-                report.pop(i)
-
-            popped = True
-
-            for j in range(len(report)):
-                if report[j] != report_desc[j]:
-                    return False
-
-            break
-        elif report[i] != report_desc[i] and popped:
-            return False
-
-    # check difference
-    for i in range(1, len(report)):      
-
-        diff = abs(report[i] - report[i - 1])
-
-        if (diff > VALID_LEVEL_CHANGE or diff == 0) and not popped:
-
-            if i + 1 < len(report):
-                if abs(report[i + 1] - report[i]) <= VALID_LEVEL_CHANGE and abs(report[i + 1] - report[i]) > 0:
-                    report.pop(i - 1)
-                else:
-                    report.pop(i)
-            else:
-                if abs(report[i - 1] - report[i - 2]) <= VALID_LEVEL_CHANGE and abs(report[i - 1] - report[i - 2]) > 0:
-                    report.pop(i)
-                else:
-                    report.pop(i - 1)
-
-            popped = True
-
-            for j in range(1, len(report)):
-
-                diff = abs(report[j] - report[j - 1])
-
-                if (diff > VALID_LEVEL_CHANGE or diff == 0):
-                    return False
-                
-            break
-        elif (diff > VALID_LEVEL_CHANGE or diff == 0) and popped:
-            return False
-
-    return True
-
 def is_safe_tolerate_one_exception(report, VALID_LEVEL_CHANGE):
-    if is_safe(report, VALID_LEVEL_CHANGE):
-        return True
-        
-    asc_result = check_asc_order(report.copy(), VALID_LEVEL_CHANGE)
-    desc_result = check_desc_order(report.copy(), VALID_LEVEL_CHANGE)
+    # iterating through report
 
-    return asc_result or desc_result
+    for i in range(0, len(report) - 1):
+        # check if its safe
+
+        diff = abs(report[i + 1] - report[i])
+
+        if  diff == 0 or diff > VALID_LEVEL_CHANGE:
+            # check if report minus first checked value is ok
+
+            report_minus_i = report.copy()
+            report_minus_i.pop(i)
+
+            is_ok = True
+            for j in range(0, len(report_minus_i) - 1):
+                diff = abs(report_minus_i[j + 1] - report_minus_i[j])
+
+                if diff == 0 or diff > VALID_LEVEL_CHANGE:
+                    is_ok = False
+                    break
+
+            if is_ok and (report_minus_i == sorted(report_minus_i) or report_minus_i == sorted(report_minus_i, reverse=True)):
+                return True
+            
+            # check if report minus first checked value is ok
+
+            report_minus_imore = report.copy()
+            report_minus_imore.pop(i + 1)
+
+            is_ok = True
+            for j in range(0, len(report_minus_imore) - 1):
+                diff = abs(report_minus_imore[j + 1] - report_minus_imore[j])
+
+                if diff == 0 or diff > VALID_LEVEL_CHANGE:
+                    is_ok = False
+                    break
+
+            if is_ok and (report_minus_imore == sorted(report_minus_imore) or report_minus_imore == sorted(report_minus_imore, reverse=True)):
+                return True
+            
+            return False
+        
+    if report == sorted(report) or report == sorted(report, reverse=True):
+        return True
+    
+    hist = Counter(report)
+
+    for value, occ in hist.items():
+        if occ == 3:
+            return False
+        elif occ == 2:
+            report_minus_first_occ = report.copy()
+            report_minus_first_occ.remove(value)
+
+            report_minus_second_occ = report.copy()
+            report_minus_second_occ.reverse()
+            report_minus_second_occ.remove(value)
+            report_minus_second_occ.reverse()
+
+            is_ok = True
+            for i in range(0, len(report_minus_first_occ) - 1):
+                diff = abs(report_minus_first_occ[i + 1] - report_minus_first_occ[i])
+
+                if diff == 0 or diff > VALID_LEVEL_CHANGE:
+                    is_ok = False
+                    break
+
+            if is_ok and (report_minus_first_occ == sorted(report_minus_first_occ) or report_minus_first_occ == sorted(report_minus_first_occ, reverse=True)):
+                return True
+            
+            is_ok = True
+            for i in range(0, len(report_minus_second_occ) - 1):
+                diff = abs(report_minus_second_occ[i + 1] - report_minus_second_occ[i])
+
+                if diff == 0 or diff > VALID_LEVEL_CHANGE:
+                    is_ok = False
+                    break
+
+            if is_ok and (report_minus_second_occ == sorted(report_minus_second_occ) or report_minus_second_occ == sorted(report_minus_second_occ, reverse=True)):
+                return True
+            
+    return False
     
 print(safe_reports(reactor_data, is_safe_tolerate_one_exception, 3))
