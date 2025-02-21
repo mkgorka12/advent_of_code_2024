@@ -1,7 +1,7 @@
-from common import getInput
+import common
 from functools import reduce
 
-arr1, arr2 = getInput("input.txt")
+arr1, arr2 = common.getInput("input.txt")
 
 arr1.sort()
 arr2.sort()

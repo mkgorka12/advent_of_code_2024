@@ -1,8 +1,8 @@
-from common import getInput
+import common
 from collections import Counter
 from functools import reduce
 
-arr1, arr2 = getInput("/home/mkgorka/Documents/advent_of_code_2024/day1/input.txt")
+arr1, arr2 = common.getInput("input.txt")
 
 counter = Counter(arr2)
 
