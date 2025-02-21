@@ -6,11 +6,14 @@ def getInput(filename: str):
 
     return res
 
-def getMulParameters(input: str):
+def multiplyMulParameters(input: str):
+    if input[0] != '(':
+        return 0
+
     valid = False
     parameters = ""
 
-    for idx, char in enumerate(input):
+    for idx, char in enumerate(input[1:]):
         if char == ')':
             valid = True
             break
@@ -27,3 +30,14 @@ def getMulParameters(input: str):
             return 0
         
     return 0
+
+class BadMatchTable:
+    def __init__(self, string: str):
+        self.strlen = len(string)
+        self.dict = {}
+
+        for idx, char in enumerate(string):
+            self.dict[char] = self.strlen - idx - 1
+
+    def offset(self, char: str):
+        return self.dict[char] if char in self.dict.keys() else self.strlen
