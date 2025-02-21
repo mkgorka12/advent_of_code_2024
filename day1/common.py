@@ -7,3 +7,5 @@ def getInput(filename: str):
             input = line.split("   ")
             arr1.append(int(input[0]))
             arr2.append(int(input[1][:-1]))
+
+    return (arr1, arr2)
