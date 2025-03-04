@@ -1,6 +1,6 @@
 import common
 
-reports = common.getInput("/home/mkgorka/Documents/advent_of_code_2024/day2/input.txt")
+reports = common.getInput("input.txt")
 
 safeReports = 0
 for report in reports:
