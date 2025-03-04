@@ -1,6 +1,6 @@
 import common
 
-reports = common.getInput("/home/mkgorka/Documents/advent_of_code_2024/day2/input.txt")
+reports = common.getInput("input.txt")
 
 # I'm not proud of this solution, however I don't know yet how to do it better
 
