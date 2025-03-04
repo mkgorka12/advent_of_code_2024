@@ -1,6 +1,6 @@
 import common
 
-input = common.getInput("/home/mkgorka/Documents/advent_of_code_2024/day3/input.txt")
+input = common.getInput("input.txt")
 
 res = 0
 enabled = True
