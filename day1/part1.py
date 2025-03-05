@@ -1,4 +1,4 @@
-import common
+import day4.common as common
 from functools import reduce
 
 arr1, arr2 = common.getInput("input.txt")

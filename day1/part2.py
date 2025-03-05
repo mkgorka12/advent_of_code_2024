@@ -1,4 +1,4 @@
-import common
+import day4.common as common
 from collections import Counter
 from functools import reduce
 
