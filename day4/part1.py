@@ -1,7 +1,7 @@
 import common
 
 searched = "XMAS"
-matrix = common.getInput("c:/Users/Maciej/Documents/vsc PY/advent_of_code_2024/day4/input.txt")
+matrix = common.getInput("input.txt")
 
 res = 0
 for i in range(len(matrix)):
